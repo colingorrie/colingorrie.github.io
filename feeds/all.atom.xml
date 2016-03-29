@@ -13,7 +13,7 @@
 &lt;p&gt;This is the content of my super blog post. This – some automated en-dash replacement – will test &lt;code&gt;smarty&lt;/code&gt;. Using ampersands &lt;span class="amp"&gt;&amp;amp;&lt;/span&gt; the like will test &lt;code&gt;typogrify&lt;/code&gt;. This&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt; will test &lt;code&gt;extra&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id="some-code"&gt;Some code&lt;/h2&gt;
 &lt;p&gt;This will test &lt;code&gt;codehilite&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;is_excellent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;colin&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;is_excellent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;colin&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="sd"&gt;"""Do you really need to ask?"""&lt;/span&gt;
     &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
