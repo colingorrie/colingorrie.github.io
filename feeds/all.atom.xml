@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Colin Gorrie's Data Story</title><link href="http://colingorrie.github.io/" rel="alternate"></link><link href="http://colingorrie.github.io/feeds/all.atom.xml" rel="self"></link><id>http://colingorrie.github.io/</id><updated>2015-03-29T16:30:00-04:00</updated><entry><title>Three ways to detect outliers</title><link href="http://colingorrie.github.io/outlier-detection.html" rel="alternate"></link><updated>2015-03-29T16:30:00-04:00</updated><author><name>Colin Gorrie</name></author><id>tag:colingorrie.github.io,2015-03-29:outlier-detection.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Colin Gorrie's Data Story</title><link href="http://colingorrie.github.io/" rel="alternate"></link><link href="http://colingorrie.github.io/feeds/all.atom.xml" rel="self"></link><id>http://colingorrie.github.io/</id><updated>2016-03-29T16:30:00-04:00</updated><entry><title>Three ways to detect outliers</title><link href="http://colingorrie.github.io/outlier-detection.html" rel="alternate"></link><updated>2016-03-29T16:30:00-04:00</updated><author><name>Colin Gorrie</name></author><id>tag:colingorrie.github.io,2016-03-29:outlier-detection.html</id><summary type="html">
 &lt;p&gt;&lt;strong&gt;Table of contents&lt;/strong&gt;&lt;/p&gt;
 &lt;div class="toc"&gt;
 &lt;ul&gt;
@@ -8,9 +8,9 @@
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;a href="#methods"&gt;Methods&lt;/a&gt;&lt;ul&gt;
-&lt;li&gt;&lt;a href="#iqr-method"&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt; method&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="#z-score-method"&gt;Z-score method&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="#modified-z-score-method"&gt;Modified Z-score method&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#iqr-method"&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt; method&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;a href="#discussion"&gt;Discussion&lt;/a&gt;&lt;/li&gt;
@@ -29,26 +29,12 @@
 &lt;h2 id="a-word-of-warning"&gt;A word of warning&lt;/h2&gt;
 &lt;p&gt;None of these methods will deliver the objective truth about which of a dataset’s observations are outliers, simply because there is no objective way of knowing whether something is truly an outlier or an honest-to-goodness data point your model should account for. It is a decision you must make subjectively, depending on the goals of uour analysis. Nevertheless, there is some guidance to be found in the accumulated wisdom of the field: these functions are a great way to start wondering about which points in your data should be treated as outliers.&lt;/p&gt;
 &lt;h1 id="methods"&gt;Methods&lt;/h1&gt;
-&lt;p&gt;The three methods I’ll go through here are the &lt;strong&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt; (interquartile range) method&lt;/strong&gt;, the &lt;strong&gt;Z-score method&lt;/strong&gt;, and the &lt;strong&gt;modified Z-score method&lt;/strong&gt;. To show how the different methods work, I’ll make reference to an example dataset, the 1985 auto imports dataset, made available by the &lt;a href="https://archive.ics.uci.edu/ml/datasets/Automobile"&gt;&lt;span class="caps"&gt;UCI&lt;/span&gt; Machine Learning repository&lt;/a&gt;, in particular the price field, which contains the prices for which various automobiles were sold in 1985.&lt;/p&gt;
-&lt;h2 id="iqr-method"&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt; method&lt;/h2&gt;
-&lt;p&gt;The &lt;span class="caps"&gt;IQR&lt;/span&gt; (interquartile range) method of outlier detection was developed by John Tukey, the pioneer of exploratory data analysis. This was in the days of calculation and plotting by hand, so the datasets involved were typically small, and the emphasis was on understanding the story the data told. If you’ve seen a box-and-whisker plot (also a Tukey contribution), you’ve seen this method in action.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;p&gt;A box-and-whisker plot is a &lt;strong&gt;nonparametric&lt;/strong&gt; visualization of a population. In other words, they make no assumptions about the statistical distribution of the population. Instead, they use &lt;strong&gt;quartiles&lt;/strong&gt; (points that divide the data into four groups of equal size) to plot the shape of the data. The box represents the 1st and 3rd quartiles, which are equal to the 25th and 75th percentiles. The line inside the box represents the 2nd quartile, which is the median.&lt;/p&gt;
-&lt;p&gt;The interquartile range, which gives this method of outlier detection its name, is the range between the first and the third quartiles (the edges of the box). Tukey considered any data point that fell outside of either 1.5 &lt;span class="caps"&gt;IQR&lt;/span&gt; below the first – or 1.5 &lt;span class="caps"&gt;IQR&lt;/span&gt; above the third – quartile to be “outside” or “far out”. In a classic box-and-whisker plot, the ‘whiskers’ extend up to the last data point that is not “outside”.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Box-and-whisker plot" src="http://colingorrie.github.io/images/box-whiskers.png" style="width: 372px; height: auto;"/&gt;&lt;/p&gt;
-&lt;p&gt;Let’s take the box-and-whisker plot above as an example. From the box, we can see that the median of the dataset falls just above $10K, and that the first and third quartiles fall around $8K and $16K, respectively. The whiskers show us that there are no outliers (as calculated by the &lt;span class="caps"&gt;IQR&lt;/span&gt; method) on the low end, but there are some (actually, 17) on the high end, namely above $30K.&lt;/p&gt;
-&lt;p&gt;To automate the process of finding outliers by the &lt;span class="caps"&gt;IQR&lt;/span&gt; method, you can use the following Python function:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
-
-&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;outliers_iqr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="n"&gt;quartile_1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;quartile_3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;percentile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;75&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
-    &lt;span class="n"&gt;iqr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;quartile_3&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;quartile_1&lt;/span&gt;
-    &lt;span class="n"&gt;lower_bound&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;quartile_1&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;iqr&lt;/span&gt;
-    &lt;span class="n"&gt;upper_bound&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;quartile_3&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;iqr&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;where&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;upper_bound&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;lower_bound&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;I’ll discuss the advantages and disadvantages of the &lt;span class="caps"&gt;IQR&lt;/span&gt; method after I’ve introduced the remaining alternatives. &lt;/p&gt;
+&lt;p&gt;The three methods I’ll go through here are the &lt;strong&gt;Z-score method&lt;/strong&gt;, and the &lt;strong&gt;modified Z-score method&lt;/strong&gt;, and the &lt;strong&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt; (interquartile range) method&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;To show how the different methods work, I’ll make reference to an example dataset, Sir Francis Galton’s famous height dataset, made available by &lt;a href="http://www.math.uah.edu/stat/data/Galton.html"&gt;Random&lt;/a&gt; at the University of Alabama in Huntsville. The dataset records the heights of 898 people.&lt;/p&gt;
+&lt;p&gt;Here is a histogram showing the distribution of heights in the dataset:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Histogram of Galton's height data" src="http://colingorrie.github.io/images/galton-histogram.png" style="width: 391px; height: auto;"/&gt;&lt;/p&gt;
 &lt;h2 id="z-score-method"&gt;Z-score method&lt;/h2&gt;
-&lt;p&gt;Unlike the &lt;span class="caps"&gt;IQR&lt;/span&gt; method, the Z-score method is &lt;strong&gt;parametric&lt;/strong&gt;, which means it makes assumptions about the distribution of the data in question. Specifically, it assumes a normal (Gaussian) distribution. Why is this? The &lt;strong&gt;Z-score&lt;/strong&gt;, or standard score, is a way of describing a data point in terms of its relationship to the mean and standard deviation of a group of points. Taking a Z-score is simply mapping the data onto a distribution whose mean is defined as 0 and whose standard deviation is defined as 1.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;Z-score&lt;/strong&gt;, or standard score, is a way of describing a data point in terms of its relationship to the mean and standard deviation of a group of points. Taking a Z-score is simply mapping the data onto a distribution whose mean is defined as 0 and whose standard deviation is defined as 1.&lt;/p&gt;
 &lt;p&gt;The goal of taking Z-scores is to remove the effects of the location and scale of the data, allowing different datasets to be compared directly. The intuition behind the Z-score method of outlier detection is that, once we’ve centred and rescaled the data, anything that is too far from zero (the threshold is usually a Z-score of 3 or -3) should be considered an outlier.&lt;/p&gt;
 &lt;p&gt;This function shows how the calculation is made:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
@@ -61,8 +47,9 @@
     &lt;span class="n"&gt;z_scores&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mean_y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="n"&gt;stdev_y&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
     &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;where&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;abs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;z_scores&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;threshold&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The Z-score method relies on the mean and standard deviation of a group of data to measure central tendency and dispersion. This is troublesome, because the mean and standard deviation are highly affected by outliers – they are not &lt;strong&gt;robust&lt;/strong&gt;. In fact, the skewing that outliers bring is one of the biggest reasons for finding and removing outliers from a dataset!&lt;/p&gt;
 &lt;h2 id="modified-z-score-method"&gt;Modified Z-score method&lt;/h2&gt;
-&lt;p&gt;The Z-score method has a drawback: for a dataset of size &lt;span class="math"&gt;\(n\)&lt;/span&gt;, the Z-score of any observation can be no greater than &lt;span class="math"&gt;\((n - 1) / \sqrt{n}\)&lt;/span&gt;. For small datasets, this means it will be difficult for any observation to reach the threshold (&lt;span class="math"&gt;\(&amp;gt; 3\)&lt;/span&gt; or &lt;span class="math"&gt;\(&amp;lt; -3\)&lt;/span&gt;) past which it is considered an outlier by the Z-score method. In fact, it is impossible unless the dataset consists of at least 11 observations.&lt;/p&gt;
+&lt;p&gt;Another drawback of the Z-score method is that it behaves strangely in small datasets – in fact, the Z-score method will never detect an outlier if the dataset has fewer than 12 items in it. This motivated the development of a modified Z-score method, which does not suffer from the same limitation.&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="#fn:2" rel="footnote"&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
 
 &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;outliers_modified_z_score&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
@@ -74,9 +61,34 @@
                          &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
     &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;where&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;abs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;modified_z_scores&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;threshold&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A further benefit of the modified Z-score method is that it uses the median and &lt;span class="caps"&gt;MAD&lt;/span&gt; rather than the mean and standard deviation. The median and &lt;span class="caps"&gt;MAD&lt;/span&gt; are &lt;strong&gt;robust&lt;/strong&gt; measures of central tendency and dispersion, respectively.&lt;/p&gt;
+&lt;h2 id="iqr-method"&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt; method&lt;/h2&gt;
+&lt;p&gt;Another robust method for labeling outliers is the &lt;span class="caps"&gt;IQR&lt;/span&gt; (interquartile range) method of outlier detection developed by John Tukey, the pioneer of exploratory data analysis. This was in the days of calculation and plotting by hand, so the datasets involved were typically small, and the emphasis was on understanding the story the data told. If you’ve seen a box-and-whisker plot (also a Tukey contribution), you’ve seen this method in action.&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="#fn:1" rel="footnote"&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;A box-and-whisker plot uses &lt;strong&gt;quartiles&lt;/strong&gt; (points that divide the data into four groups of equal size) to plot the shape of the data. The box represents the 1st and 3rd quartiles, which are equal to the 25th and 75th percentiles. The line inside the box represents the 2nd quartile, which is the median.&lt;/p&gt;
+&lt;p&gt;The interquartile range, which gives this method of outlier detection its name, is the range between the first and the third quartiles (the edges of the box). Tukey considered any data point that fell outside of either 1.5 times the &lt;span class="caps"&gt;IQR&lt;/span&gt; below the first – or 1.5 times the &lt;span class="caps"&gt;IQR&lt;/span&gt; above the third – quartile to be “outside” or “far out”. In a classic box-and-whisker plot, the ‘whiskers’ extend up to the last data point that is not “outside”.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Box-and-whisker plot" src="http://colingorrie.github.io/images/galton-boxplot.png" style="width: 363px; height: auto;"/&gt;&lt;/p&gt;
+&lt;p&gt;Let’s take the box-and-whisker plot above as an example. From the box, we can see that the median of the dataset falls at 66.5 inches, and that the first and third quartiles fall at approximately 64 and 70 inches, respectively. The whiskers show us that there are no outliers (as calculated by the &lt;span class="caps"&gt;IQR&lt;/span&gt; method) on the low end, but there is one on the high end, which is defined as over 78.25 inches.&lt;/p&gt;
+&lt;p&gt;To automate the process of finding outliers by the &lt;span class="caps"&gt;IQR&lt;/span&gt; method, you can use the following Python function:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;outliers_iqr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;quartile_1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;quartile_3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;percentile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;75&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+    &lt;span class="n"&gt;iqr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;quartile_3&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;quartile_1&lt;/span&gt;
+    &lt;span class="n"&gt;lower_bound&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;quartile_1&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;iqr&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mf"&gt;1.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;upper_bound&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;quartile_3&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;iqr&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mf"&gt;1.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;where&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;upper_bound&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ys&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;lower_bound&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;One benefit of using the interquartile range method is that, like the modified Z-score method, it uses a &lt;strong&gt;robust&lt;/strong&gt; measure of dispersion. &lt;/p&gt;
 &lt;h1 id="discussion"&gt;Discussion&lt;/h1&gt;
-&lt;p&gt;As I mentioned above, the Z-score method relies on the mean and standard deviation of a group of data. This is itself troublesome, because outliers are known to affect the mean and standard deviation of a group of points. In fact, the skewing that outliers bring is one of the biggest reasons for finding and removing outliers from a dataset!&lt;/p&gt;
-&lt;p&gt;Another drawback of the Z-score method is that it behaves strangely in small datasets.&lt;/p&gt;
+&lt;p&gt;So, which method should you use? First, there is little harm in using all of them and seeing what picture emerges: in exploratory data analysis, there is no inference being made. There is therefore no increased risk of &lt;strong&gt;Type 1 error&lt;/strong&gt; (false positives). That said, in my opinion, the Z-score method has the least to offer, because it is dependent on non-robust measures, and fails to report any outliers with low-size datasets.&lt;/p&gt;
+&lt;p&gt;Here are the results of running each of these functions on the Galton height data:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Z-score&lt;/strong&gt;: 56” (below); 78”, 79” (above)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Modified Z-score&lt;/strong&gt;: none&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;span class="caps"&gt;IQR&lt;/span&gt;&lt;/strong&gt;: 79” (above)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As you can see, no method is returning radically different results from any other. In a dataset with 898 observations, the difference between 0 and 3 outliers is not great.&lt;/p&gt;
+&lt;p&gt;One caveat: all of these methods will encounter problems with a strongly skewed dataset. If the data is distributed in a strongly asymmetrical fashion, it will need to be re-expressed before applying any of these methods.&lt;/p&gt;
 &lt;h1 id="conclusion"&gt;Conclusion&lt;/h1&gt;
 &lt;p&gt;It is important to reiterate that these methods should not be used mechanically. They should be used to explore the data – they let you know which points might be worth a closer look. What to do with this information depends heavily on the situation. Sometimes it is appropriate to exclude outliers from a dataset to make a model trained on that dataset more predictive. Sometimes, however, the presence of outliers is a warning sign that the real-world process generating the data is more complicated than expected.&lt;/p&gt;
 &lt;p&gt;As an astute commenter on &lt;a href="http://stats.stackexchange.com/a/182"&gt;CrossValidated&lt;/a&gt; put it: “Sometimes outliers are bad data, and should be excluded, such as typos. Sometimes they are Wayne Gretzky or Michael Jordan, and should be kept.” Domain knowledge and practical wisdom are the only ways to tell the difference.&lt;/p&gt;
@@ -84,64 +96,10 @@
 &lt;hr/&gt;
 &lt;ol&gt;
 &lt;li id="fn:1"&gt;
-&lt;p&gt;If you couldn’t tell, I’m a &lt;em&gt;huge&lt;/em&gt; fan of Tukey’s work.  &lt;a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;If you couldn’t tell, I’m a &lt;em&gt;huge&lt;/em&gt; fan of Tukey’s work. See: Tukey, John (1977). &lt;em&gt;Exploratory Data Analysis&lt;/em&gt;. Addison-Wesley, Reading &lt;span class="caps"&gt;MA&lt;/span&gt;. &lt;a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:2"&gt;
+&lt;p&gt;Iglewicz, Boris and David Hoaglin (1993), &lt;em&gt;How to Detect and Handle Outliers&lt;/em&gt;. American Society for Quality Control, Milwaukee &lt;span class="caps"&gt;WI&lt;/span&gt;. &lt;a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var align = "center",
-        indent = "0em",
-        linebreak = "false";
-
-    if (false) {
-        align = (screen.width &lt; 768) ? "left" : align;
-        indent = (screen.width &lt; 768) ? "0em" : indent;
-        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
-    }
-
-    var mathjaxscript = document.createElement('script');
-    var location_protocol = (false) ? 'https' : document.location.protocol;
-    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: '"+ align +"'," +
-        "    displayIndent: '"+ indent +"'," +
-        "    showMathMenu: true," +
-        "    messageStyle: 'normal'," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
-        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
-        "    }, " +
-        "}); " +
-        "if ('default' !== 'default') {" +
-            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
-                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
-                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
-                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
-                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
-                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
-            "});" +
-        "}";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;</summary><category term="outliers"></category><category term="python"></category></entry></feed>
+&lt;/div&gt;</summary><category term="outliers"></category><category term="python"></category></entry></feed>
